@@ -10,7 +10,12 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "janadesh.gowell.edu.np",
-        pathname: "/media/**",
+        pathname: "/api/v1/media/**", // must match your API path exactly
+      },
+      {
+        protocol: "https",
+        hostname: "janadesh.gowell.edu.np",
+        pathname: "/media/**", // optional if you have non-API media
       },
     ],
   },

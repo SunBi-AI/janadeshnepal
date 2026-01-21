@@ -40,21 +40,23 @@ if (!data || data.length === 0) {
               </div>
 
               {/* CONTENT */}
-              <div className="text-center">
+              <div className="text-center ">
 
-                <div className="before:ease relative py-3 overflow-hidden border-b border-gray-200 text-[#0284c7]  transition-all before:absolute before:top-1/2 before:h-0 before:w-64 before:origin-center before:-translate-x-20 before:rotate-45 before:bg-[#0284c7] before:duration-700 hover:text-white hover:shadow-blue-500 hover:before:h-64 hover:before:-translate-y-32">
-                  <span className="relative text-lg font-medium z-10">                    {locale === 'np' ? leader.name_np : leader.name_en}
+                <div className="flex items-center justify-center px-4 py-2 border-b border-gray-200 transition ease-in-out duration-500">
+                  <span className="text-[17px] font-normal text-blue-500">   
+                     {locale === 'np' ? leader.name_np : leader.name_en}
                   </span>
                 </div>
 
-                <p className="text-[17px] font-normal text-gray-600 mt-2">
+                <p className="text-[14px] font-normal text-gray-600 pt-1  ">
                   {locale === 'np'
                     ? leader.position_np
-                    : leader.position_en}                </p>
+                    : leader.position_en}                
+                  </p>
 
                 <a
                   href={leader.phone ? `tel:${leader.phone}` : undefined}
-                  className="py-3 font-normal text-sm text-gray-600"
+                  className="pb-2 font-normal text-[14px] text-gray-600"
                 >
                   {leader.phone}
                 </a>

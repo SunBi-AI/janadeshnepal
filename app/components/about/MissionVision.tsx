@@ -14,7 +14,7 @@ export default function MissionVision() {
             <div className="grid gap-6 md:grid-cols-2">
 
             {/* Mission */}
-            <div className="rounded-2xl  p-8 border border-gray-100 bg-gray-50 transition duration-300 hover:shadow-md">
+            <div className="rounded-2xl  p-8 border border-gray-100 bg-gray-50 transition duration-300 hover:border-blue-200 ">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Lightbulb className="h-6 w-6 text-blue-600" />
                 </div>
@@ -29,7 +29,7 @@ export default function MissionVision() {
             </div>
 
             {/* Vision */}
-            <div className="rounded-2xl  p-8 border border-gray-100 bg-gray-50 transition duration-300 hover:shadow-md">
+            <div className="rounded-2xl  p-8 border border-gray-100 bg-gray-50 transition duration-300 hover:border-blue-200">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                 <Users className="h-6 w-6 text-green-600" />
                 </div>

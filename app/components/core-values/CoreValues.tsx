@@ -38,12 +38,11 @@ export default function CoreValues() {
 
               <div className="relative z-10">
                 {value.image && (
-                  <div className="mb-6  ">
+                  <div className="mb-6 relative h-[65px] w-[65px]">
                     <Image
                       src={value.image}
                       alt={value.title_en}
-                      width={60}
-                      height={63}
+                      fill
                       className="object-cover rounded-lg max-w-max"
                     />
                   </div>
@@ -57,17 +56,7 @@ export default function CoreValues() {
                 {/* Description */}
                 <p className="text-gray-600 text-base mb-6">
                   {t(`${value.slug}.description`) || value.description_en}
-                </p>
-
-                {/* Why it matters */}
-                <div className="rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 p-5 border border-gray-200 group-hover:border-gray-300 transition-colors">
-                  <p className="text-sm font-bold text-gray-900 mb-1">
-                    {t('why')}
-                  </p>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {t(`${value.slug}.why`) || ''}
-                  </p>
-                </div>
+                </p>                
               </div>
             </div>
           ))}

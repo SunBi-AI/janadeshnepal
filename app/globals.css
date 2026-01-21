@@ -3,7 +3,7 @@
 @tailwind utilities;
 @plugin "daisyui";
 
-
+@import url('https://cdn.jsdelivr.net/npm/@iconify-json/hugeicons@1.2.23/+esm');
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -62,4 +62,14 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;     /* Firefox */
+}
+
+
+i.hgi {
+  font-size: 16px; /* adjust size */
+  transition: color 0.3s;
+}
+
+i.hgi:hover {
+  color: #00bf63; /* green on hover */
 }

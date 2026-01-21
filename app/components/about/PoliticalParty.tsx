@@ -64,7 +64,7 @@ function TimelineItem({ item, reverse, locale }: any) {
       {item.image && (
         <motion.div
           style={{ y }}
-          className="relative w-full lg:w-[480px] h-[320px] rounded-3xl overflow-hidden shadow-xl"
+          className="relative w-full lg:w-[480px] h-[320px] rounded-3xl overflow-hidden "
         >
           <Image
             src={item.image}
@@ -76,7 +76,7 @@ function TimelineItem({ item, reverse, locale }: any) {
       )}
 
       {/* TEXT */}
-      <div className="rounded-3xl border-gray-100 bg-gray-50 transition duration-300 hover:shadow-md p-8 w-full lg:max-w-[500px] mt-8 lg:mt-0">
+      <div className="rounded-3xl border-gray-100 bg-gray-50 transition duration-300 border hover:border-blue-200 p-8 w-full lg:max-w-[500px] mt-8 lg:mt-0">
         <span className="text-gray-400 text-sm">{item.year}</span>
 
         <h3 className="text-xl text-[#2772b0] font-semibold mt-2">

@@ -15,12 +15,14 @@ import {
   X
 } from 'lucide-react';
 import Container from './layout/Container';
+import { useSocialLinks } from '@/hooks/useSocialLinks';
 
 export default function Navbar() {
   const locale = useLocale();
   const t = useTranslations('navbar');
   const pathname = usePathname();
   const cleanPathname = pathname.replace(`/${locale}`, '') || '/';
+  const { data: socialLinks = [] } = useSocialLinks();
 
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false); // ✅ NEW
@@ -85,15 +87,32 @@ export default function Navbar() {
                   ${scrolled ? 'h-0 opacity-0' : 'h-auto opacity-100'}
                 `}
               >
-                <span>info@janadeshnepal.org</span>
+                <a href="mailto:info@janadeshnepal.org">info@janadeshnepal.org</a>
+            <div className="flex items-center gap-4">
+             {socialLinks
+  .filter(item => item.is_active)
+  .sort((a, b) => a.order - b.order)
+  .map((item) => (
+    <div className=" flex bg-slate-400" key={item.id}>
+    <Link
+        key={item.id}
+        href={item.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="p-2 rounded-full hover:bg-green-600 hover:text-white transition-colors"
+        aria-label={item.platform_display}
+      >
+        <span
+          dangerouslySetInnerHTML={{ __html: item.icon }}
+          className="text-[16px]" // adjust size
+        />
+      </Link>
+    </div>
+))}
 
-                <div className="flex items-center gap-4">
-                  <Facebook size={16} />
-                  <Instagram size={16} />
-                  <Youtube size={16} />
-                  <Twitter size={16} />
-                  <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
-                </div>
+              <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
+            </div>
+
               </div>
 
               {!scrolled && <hr className="bg-gray-300" />}
@@ -170,10 +189,24 @@ export default function Navbar() {
         <div className="flex flex-col gap-4 text-gray-800">
          <div className="flex gap-4 items-center">
           <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
-          <Facebook size={16} />
-          <Instagram size={16} />
-          <Youtube size={16} />
-          <Twitter size={16} />
+          {socialLinks
+                    .filter(item => item.is_active)
+                    .sort((a, b) => a.order - b.order)
+                    .map((item) => (
+                      <Link 
+                        key={item.id} 
+                        href={item.url} 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-green-600 transition-colors"
+                        aria-label={item.platform_display}
+                      >
+                        <i 
+                          className={item.icon.replace(/<\/?i[^>]*>/g, '').trim()}
+                          style={{ fontSize: '16px' }}
+                        />
+                      </Link>
+                    ))}
          </div>
       </div>
       </div>
