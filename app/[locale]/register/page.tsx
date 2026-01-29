@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft, Check, User, FileText, Upload, CheckCircle } from 'lucide-react';
 import PageHeader from '../../components/layout/PageHeader';
 import { useTranslations, useLocale } from 'next-intl';
-
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
 
@@ -159,11 +158,7 @@ const MembershipFormBasic = () => {
   return (
     <>
       <div className="">
-        <PageHeader
-          title={t('title')}
-          subtitle={t('subtitle')}
-        />
-
+        <PageHeader slug="register" />
       </div>
       <div className="min-h-screen bg-[#f2f2f2] py-12 px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md overflow-hidden">

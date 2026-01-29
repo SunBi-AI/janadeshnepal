@@ -1,3 +1,6 @@
+import { useCachedApi } from './useCachedApi';
+
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 
 if (!API_BASE) {
@@ -24,3 +27,4 @@ export async function fetchManifesto() {
 
   return res.json();
 }
+export const useManifesto = () => useCachedApi('manifesto', fetchManifesto);

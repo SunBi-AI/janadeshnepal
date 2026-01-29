@@ -4,14 +4,12 @@ import PageHeader from '../../components/layout/PageHeader';
 import { useTranslations } from 'next-intl';
 
 export default function CoreValuesPage() {
-      const t = useTranslations('core-values');
+  const t = useTranslations('core-values');
+ 
 
   return (
     <section className="">
-          <PageHeader
-                title={t('title')}
-                subtitle={t('subtitle')}
-              />
+          <PageHeader slug="core-values" />
         <CoreValues/>
     </section>
   );

@@ -43,18 +43,21 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
       <p className="text-sm text-gray-500 mb-6">{blog.date}</p>
 
-        <p className="text-gray-500 text-sm">
-            {locale === 'np' ? blog.content_np : blog.content_en}
-        </p>
+  <p className="text-gray-500 text-sm">
+  {locale === 'np' 
+    ? blog.content_np?.replace(/<[^>]*>?/gm, '') 
+    : blog.content_en?.replace(/<[^>]*>?/gm, '')}
+</p>
+
       </div>
 
-      {/* <div className="prose max-w-none">
-        <div
-          dangerouslySetInnerHTML={{
-            __html: locale === 'np' ? blog.description_np : blog.description_en,
-          }}
-        />
-      </div> */}
+      <div className="prose max-w-none">
+       <div
+  dangerouslySetInnerHTML={{
+    __html: (locale === 'np' ? blog.description_np : blog.description_en) || '',
+  }}
+/>
+      </div>
       </Container>
     </div>
   );

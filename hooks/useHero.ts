@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useCachedApi } from './useCachedApi';
 
 export type Hero = {
   title_en: string;
@@ -15,10 +15,10 @@ export type Hero = {
   background_image: string;
 };
 
-export const fetchHero = async (): Promise<Hero> => {
+export const fetchHero = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/hero-section/`);
   if (!res.ok) throw new Error('Failed to fetch hero section');
   return res.json();
 };
 
-export const useHero = () => useQuery({ queryKey: ['hero'], queryFn: fetchHero, staleTime: 1000 * 60 });
+export const useHero = () => useCachedApi('hero', fetchHero);

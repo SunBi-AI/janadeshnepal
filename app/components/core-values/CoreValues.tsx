@@ -29,9 +29,8 @@ export default function CoreValues() {
           {valuesData.map((value: Value) => (
             <div
               key={value.id}
-              className="group relative overflow-hidden rounded-3xl bg-white p-8 border border-gray-100 hover:shadow-md transition-shadow duration-500"
+              className="group relative overflow-hidden rounded-3xl bg-white p-8 border hover:border-blue-200 transition-shadow duration-500"
             >
-              {/* Background hover effect */}
               <div
                 className={`absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />

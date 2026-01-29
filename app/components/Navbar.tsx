@@ -1,5 +1,4 @@
 'use client';
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
@@ -14,6 +13,7 @@ import {
   Menu,
   X
 } from 'lucide-react';
+import DynamicHugeicon from '../components/DynamicIcon';
 import Container from './layout/Container';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
 
@@ -88,30 +88,16 @@ export default function Navbar() {
                 `}
               >
                 <a href="mailto:info@janadeshnepal.org">info@janadeshnepal.org</a>
-            <div className="flex items-center gap-4">
-             {socialLinks
-  .filter(item => item.is_active)
-  .sort((a, b) => a.order - b.order)
-  .map((item) => (
-    <div className=" flex bg-slate-400" key={item.id}>
-    <Link
-        key={item.id}
-        href={item.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="p-2 rounded-full hover:bg-green-600 hover:text-white transition-colors"
-        aria-label={item.platform_display}
-      >
-        <span
-          dangerouslySetInnerHTML={{ __html: item.icon }}
-          className="text-[16px]" // adjust size
-        />
-      </Link>
-    </div>
-))}
+                <div className="flex items-center gap-4">
+                  {socialLinks.map((item) => (
+                    <Link key={item.id} href={item.url} target="_blank">
+                      <DynamicHugeicon iconName={item.icon} size={24} color="blue" />
 
-              <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
-            </div>
+                    </Link>
+                  ))}
+
+                  <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
+                </div>
 
               </div>
 
@@ -120,10 +106,9 @@ export default function Navbar() {
               <nav
                 className={`
                   flex gap-6 transition-all duration-300
-                  ${
-                    locale === 'np'
-                      ? 'text-[18px]'
-                      : 'text-[16.2px] font-normal'
+                  ${locale === 'np'
+                    ? 'text-[18px]'
+                    : 'text-[15.5px] font-normal'
                   }
                 `}
               >
@@ -134,10 +119,9 @@ export default function Navbar() {
                     locale={locale}
                     className={`
                       transition hover:text-green-600
-                      ${
-                        cleanPathname === href
-                          ? 'text-green-600'
-                          : 'text-gray-600'
+                      ${cleanPathname === href
+                        ? 'text-green-600'
+                        : 'text-gray-600'
                       }
                     `}
                   >
@@ -158,80 +142,68 @@ export default function Navbar() {
       </Container>
 
       <div
-  className={`
+        className={`
     fixed inset-0 z-50 max-[900px]:block hidden
     transition-opacity duration-300 ease-in-out
     ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
   `}
->
-  {/* OVERLAY */}
-  <div
-    className={`
+      >
+        {/* OVERLAY */}
+        <div
+          className={`
       absolute inset-0 bg-black
       transition-opacity duration-300 ease-in-out
       ${open ? 'opacity-40' : 'opacity-0'}
     `}
-    onClick={() => setOpen(false)}
-  />
+          onClick={() => setOpen(false)}
+        />
 
-  {/* DRAWER */}
-  <div
-    className={`
+        {/* DRAWER */}
+        <div
+          className={`
       absolute right-0 top-0 max-h-max w-[300px] bg-white shadow-xl p-6
       transform transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]
       ${open ? 'translate-x-0' : 'translate-x-full'}
     `}
-  >
-    <div className="flex text-gray-700 justify-between mb-6">
-      <div className="flex flex-col gap-4">
-       <a href="#">info@janadeshnepal.org</a>
-
-        <div className="flex flex-col gap-4 text-gray-800">
-         <div className="flex gap-4 items-center">
-          <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
-          {socialLinks
-                    .filter(item => item.is_active)
-                    .sort((a, b) => a.order - b.order)
-                    .map((item) => (
-                      <Link 
-                        key={item.id} 
-                        href={item.url} 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-green-600 transition-colors"
-                        aria-label={item.platform_display}
-                      >
-                        <i 
-                          className={item.icon.replace(/<\/?i[^>]*>/g, '').trim()}
-                          style={{ fontSize: '16px' }}
-                        />
-                      </Link>
-                    ))}
-         </div>
-      </div>
-      </div>
-      <button onClick={() => setOpen(false)}>
-        <X size={26} />
-      </button>
-    </div>
-
-    <nav className="flex flex-col gap-5">
-      {links.map(({ href, key }) => (
-        <Link
-          key={key}
-          href={href}
-          locale={locale}
-          onClick={() => setOpen(false)}
-          className="text-lg text-gray-700 hover:text-green-600 transition-colors"
         >
-          {t(key)}
-        </Link>
-      ))}
+          <div className="flex text-gray-700 justify-between mb-6">
+            <div className="flex flex-col gap-4">
+              <a href="#">info@janadeshnepal.org</a>
 
-      
-    </nav>
-  </div>
-</div>
+              <div className="flex flex-col gap-4 text-gray-800">
+                <div className="flex gap-4 items-center">
+                  <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
+                  {socialLinks.map((item) => (
+                    <Link key={item.id} href={item.url} target="_blank">
+                      <DynamicHugeicon iconName={item.icon} size={24} color="blue" />
+
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <button onClick={() => setOpen(false)}>
+              <X size={26} />
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-5">
+            {links.map(({ href, key }) => (
+              <Link
+                key={key}
+                href={href}
+                locale={locale}
+                onClick={() => setOpen(false)}
+                className="text-lg text-gray-700 hover:text-green-600 transition-colors"
+              >
+                {t(key)}
+              </Link>
+            ))}
+
+
+          </nav>
+        </div>
+      </div>
 
     </header>
   );

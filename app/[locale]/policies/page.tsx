@@ -7,7 +7,6 @@ import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { usePolicies } from '@/hooks/usePolicies';
 import Link from 'next/link';
-
 export default function Policies() {
   const t = useTranslations('policies');
   const locale = useLocale() as 'en' | 'np';
@@ -58,7 +57,7 @@ export default function Policies() {
 
   return (
     <section className="bg-[#fafafa]">
-      <PageHeader title={t('title')} subtitle={t('subtitle')} />
+          <PageHeader slug="policies" />
 
       <Container className="py-14">
         {/* Category buttons + search */}
@@ -110,7 +109,7 @@ export default function Policies() {
             {filteredPolicies.map((policy: any) => (
               <div
                 key={policy.id}
-                className="rounded-2xl border border-gray-300 p-6 bg-white flex flex-col gap-4 justify-between"
+                className="rounded-2xl border border-gray-300 hover:border-blue-200 p-6 bg-white flex flex-col gap-4 justify-between"
               >
                 <div>
                   <span className="inline-block px-4 py-1 mb-4 text-sm text-white rounded-md bg-[#2772b0]">

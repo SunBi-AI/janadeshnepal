@@ -45,7 +45,7 @@ export default function PolicyDetail() {
     <section className="bg-[#f2f5f6] py-14">
    
       <Container className='mt-[123px] '>
-        <div className="bg-white shadow rounded-2xl p-8">
+        <div className="bg-white border hover:border-blue-200 transation duration-500 rounded-2xl p-8">
           <span className="inline-block px-4 py-1 mb-4 text-sm text-white rounded-md bg-[#2772b0]">
             {locale === 'np'
               ? policy.category.name_ne

@@ -10,9 +10,10 @@ export default function HomePage() {
   const locale = useLocale(); // 'en' | 'np'
   const t = useTranslations('news'); // Load the 'news' namespace from JSON
 
-  const { data, isLoading } = useBlogs(locale as 'en' | 'np');
+  const { data, error, isLoading } = useBlogs(locale as 'en' | 'np');
 
   if (isLoading) return <p>Loading news...</p>;
+  if (error) return <p>Error loading news: {error.message}</p>;
 
   const featuredBlog = data?.[0];
   const blogsList = data?.slice(1);
@@ -20,7 +21,7 @@ export default function HomePage() {
   return (
     <div className="bg-gray-200">
       {/* Page Header */}
-      <PageHeader title={t('title')} subtitle={t('subtitle')} />
+          <PageHeader slug="news" />
 
       <Container>
         <FeaturedNewsComponent blog={featuredBlog} locale={locale as 'en' | 'np'} />

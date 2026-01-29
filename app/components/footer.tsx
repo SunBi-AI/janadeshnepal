@@ -4,18 +4,23 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
+import { useSocialLinks } from '@/hooks/useSocialLinks';
 import {
   Facebook,
   Instagram,
   Youtube,
-  Twitter
+  Twitter,
+  Menu,
+  X
 } from 'lucide-react';
 import Container from './layout/Container';
+import DynamicHugeicon from './DynamicIcon';
 
 export default function Footer() {
   const locale = useLocale();
   const t = useTranslations('footer');
   const pathname = usePathname();
+  const { data: socialLinks = [] } = useSocialLinks();
 
   const links = [
     { href: '/', key: 'home' },
@@ -84,41 +89,21 @@ export default function Footer() {
                   <h2 className="text-lg font-bold text-start text-[#144a7b]">
                 {t('connect')}
               </h2>
-              <a
-                href="https://www.facebook.com/janadeshparty"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-green-600"
-              >
-                <Facebook size={16} /> Facebook
-              </a>
+              <div className="">
+                {socialLinks.map((item) => (
+                  <div className="flex flex-col items-start mb-2" key={item.id}>
+                    <Link key={item.id} href={item.url} target="_blank">
+                      <div className="flex gap-2">
+                        <DynamicHugeicon iconName={item.icon} size={24} color="blue" />
+                        <span className="text-base text-[#144a7b] hover:text-green-600">
+                          {item.platform_display}
+                        </span>
+                      </div>
 
-              <a
-                href="https://www.instagram.com/janadeshparty"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-green-600"
-              >
-                <Instagram size={16} /> Instagram
-              </a>
-
-              <a
-                href="https://www.youtube.com/@janadeshparty"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-green-600"
-              >
-                <Youtube size={16} /> YouTube
-              </a>
-
-              <a
-                href="https://twitter.com/janadeshparty"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-green-600"
-              >
-                <Twitter size={16} /> Twitter
-              </a>
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
         </div>
          
