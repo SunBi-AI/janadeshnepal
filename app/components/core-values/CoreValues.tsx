@@ -49,13 +49,17 @@ export default function CoreValues() {
 
                 {/* Title */}
                 <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {t(`${value.slug}.title`) || value.title_en}
+                  {value.title_en}
                 </h3>
 
-                {/* Description */}
-                <p className="text-gray-600 text-base mb-6">
-                  {t(`${value.slug}.description`) || value.description_en}
-                </p>                
+                      
+                <p
+  className="text-gray-600 text-base mb-6"
+  dangerouslySetInnerHTML={{
+    __html:value.description_en
+  }}
+/>
+     
               </div>
             </div>
           ))}

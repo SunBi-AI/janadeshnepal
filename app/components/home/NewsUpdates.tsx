@@ -9,9 +9,9 @@ import { formatNepaliDate } from '@/utils/formatDate';
 
 export default function NewsUpdates() {
   const locale = useLocale() as 'en' | 'np';
-  const { data, isLoading, error } = useBlogs(locale);
+  const { data, loading, error } = useBlogs(locale);
 
-  if (isLoading) return <p>Loading news...</p>;
+  if (loading) return <p>Loading news...</p>;
   if (error || !data?.length) return null;
 
   // ✅ Take only latest 4 news
@@ -35,6 +35,7 @@ export default function NewsUpdates() {
             href={`/${locale}/news/${featured.slug}`}
             className="relative rounded-lg overflow-hidden h-[400px]"
           >
+            
             <Image
               src={featured.featured_image}
               alt={locale === 'np' ? featured.title_np : featured.title_en}

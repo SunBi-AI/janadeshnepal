@@ -83,9 +83,11 @@ function TimelineItem({ item, reverse, locale }: any) {
           {locale === 'np' ? item.title_np : item.title_en}
         </h3>
 
-        <p className="text-gray-600 text-base font-normal mt-2 leading-relaxed">
-          {locale === 'np' ? item.description_np : item.description_en}
-        </p>
+        <p className="text-gray-600 text-base font-normal mt-2 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: locale === 'np'
+      ? item.description_np
+      : item.description_en
+  }}/>
       </div>
     </motion.div>
   );

@@ -8,7 +8,7 @@ import { useLocale } from 'next-intl';
 
 export default function Hero() {
   const locale = useLocale();
-  const { data, isLoading } = useHero();
+  const { data, loading } = useHero();
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [data]);
 
-  if (isLoading || !data) return null;
+  if (loading || !data) return null;
 
   const title = locale === 'np' ? data.title_np : data.title_en;
   const subtitle = locale === 'np' ? data.subtitle_np : data.subtitle_en;

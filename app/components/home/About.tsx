@@ -129,9 +129,15 @@ export default function AboutMovement() {
                 {locale === 'np' ? aboutData.subtitle : aboutData.subtitle}
               </p>
               <br />
-              <p className="text-base text-gray-700 leading-relaxed">
-                {locale === 'np' ? aboutData.description : aboutData.description}
-              </p>
+              <p
+  className="text-base text-gray-700 leading-relaxed"
+  dangerouslySetInnerHTML={{
+    __html: locale === 'np'
+      ? aboutData.description
+      : aboutData.description
+  }}
+/>
+
             </div>
 
             {/* PHOTOS */}
