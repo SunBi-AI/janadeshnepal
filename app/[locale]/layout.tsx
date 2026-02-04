@@ -5,8 +5,8 @@ import { Roboto } from "next/font/google";
 import "../globals.css";
 
 export const metadata = {
-  title: "Janadesh Party Nepal",
-  description: "Official website of Janadesh Party Nepal",
+  // title: "Janadesh Party Nepal",
+  // description: "Official website of Janadesh Party Nepal",
   icons: {
     icon: "/assets/favicon.ico",
   },

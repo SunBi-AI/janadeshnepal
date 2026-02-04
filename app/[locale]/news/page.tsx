@@ -5,6 +5,7 @@ import NewsCard from '@/app/components/news/NewsCard';
 import FeaturedNewsComponent from '@/app/components/news/FeaturedNews';
 import PageHeader from '@/app/components/layout/PageHeader';
 import Container from '@/app/components/layout/Container';
+import MetaTags from '@/app/components/layout/MetaTags';
 
 export default function HomePage() {
   const locale = useLocale(); // 'en' | 'np'
@@ -19,8 +20,9 @@ export default function HomePage() {
   const blogsList = data?.slice(1);
 
   return (
+    <>
+    <MetaTags slug="news" />
     <div className="bg-gray-200">
-      {/* Page Header */}
       <PageHeader slug="news" />
 
       <Container>
@@ -33,5 +35,6 @@ export default function HomePage() {
         </div>
       </Container>
     </div>
+    </>
   );
 }

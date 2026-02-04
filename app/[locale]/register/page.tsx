@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft, Check, User, FileText, Upload, CheckCircle } from 'lucide-react';
 import PageHeader from '../../components/layout/PageHeader';
 import { useTranslations, useLocale } from 'next-intl';
+import MetaTags from '@/app/components/layout/MetaTags';
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
 if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
 
@@ -157,6 +158,7 @@ const MembershipFormBasic = () => {
 
   return (
     <>
+      <MetaTags slug="register" />
       <div className="">
         <PageHeader slug="register" />
       </div>

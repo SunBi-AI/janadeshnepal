@@ -4,14 +4,13 @@ import { useEffect, useState, useRef, ComponentType } from 'react';
 import dynamic from 'next/dynamic';
 import Container from '../layout/Container';
 import { fetchManifesto } from '@/hooks/manifestos';
-import type { PDFDocumentProxy } from 'pdfjs-dist';
 import { pdfjs } from 'react-pdf';
 import PDFWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
 
-// --- Use workerPort to avoid /pdf.worker.js 404 ---
-pdfjs.GlobalWorkerOptions.workerPort = new PDFWorker();
+// --- Set PDF.js worker ---
+pdfjs.GlobalWorkerOptions.workerSrc = PDFWorker;
 
-// --- Dynamic imports for client-side rendering only ---
+// --- Dynamic imports for SSR-free PDF components ---
 const PDFDocument = dynamic(
   () => import('react-pdf').then((mod) => mod.Document as ComponentType<any>),
   { ssr: false }
@@ -29,40 +28,45 @@ type Manifesto = {
 };
 
 // --- Cache constants ---
-const LOCAL_STORAGE_KEY = 'manifesto';
+const LOCAL_STORAGE_KEY = 'manifestos';
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+const PREVIEW_HEIGHT = 600; // px for card preview
 
 export default function ManifestoPage() {
-  const [data, setData] = useState<Manifesto | null>(null);
+  const [dataArray, setDataArray] = useState<Manifesto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalWidth, setModalWidth] = useState<number>(800);
-  const [numPages, setNumPages] = useState<number>(0);
+  const [numPages, setNumPages] = useState<{ [key: string]: number }>({});
+  const [previewImages, setPreviewImages] = useState<{ [key: string]: string }>({});
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // --- Load manifesto from cache or API ---
+  const openModal = (index: number) => setActiveIndex(index);
+
+  // --- Load manifesto array from cache or API ---
   useEffect(() => {
     const loadData = async () => {
       try {
         const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (cached) {
-          const parsed = JSON.parse(cached) as { value: Manifesto; timestamp: number };
+          const parsed = JSON.parse(cached) as { value: Manifesto[]; timestamp: number };
           if (Date.now() - parsed.timestamp < CACHE_TTL) {
-            setData(parsed.value);
+            setDataArray(parsed.value);
             setLoading(false);
             return;
           }
         }
 
         const res = await fetchManifesto();
-        const manifesto = res.results?.[0] ?? null;
-        if (!manifesto) throw new Error('No manifesto found');
+        const manifestos = res.results ?? [];
+        if (manifestos.length === 0) throw new Error('No manifesto found');
 
-        setData(manifesto);
+        setDataArray(manifestos);
         localStorage.setItem(
           LOCAL_STORAGE_KEY,
-          JSON.stringify({ value: manifesto, timestamp: Date.now() })
+          JSON.stringify({ value: manifestos, timestamp: Date.now() })
         );
       } catch (err) {
         setError((err as Error).message || 'Unable to load manifesto');
@@ -73,6 +77,43 @@ export default function ManifestoPage() {
 
     loadData();
   }, []);
+
+  // --- Generate PDF previews for all manifestos ---
+  useEffect(() => {
+    const generatePreviews = async () => {
+      const images: { [key: string]: string } = {};
+      const pages: { [key: string]: number } = {};
+
+      for (const manifesto of dataArray) {
+        if (manifesto.pdf_file?.toLowerCase().endsWith('.pdf')) {
+          try {
+            const pdf = await pdfjs.getDocument(manifesto.pdf_file).promise;
+            pages[manifesto.pdf_file] = pdf.numPages;
+
+            const page = await pdf.getPage(1);
+            const viewport = page.getViewport({ scale: 1 });
+            const scale = PREVIEW_HEIGHT / viewport.height;
+            const scaledViewport = page.getViewport({ scale });
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d')!;
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+
+            await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
+            images[manifesto.pdf_file] = canvas.toDataURL();
+          } catch (err) {
+            console.error('Error generating PDF preview:', err);
+          }
+        }
+      }
+
+      setPreviewImages(images);
+      setNumPages(pages);
+    };
+
+    if (dataArray.length) generatePreviews();
+  }, [dataArray]);
 
   // --- Close modal when clicking outside ---
   useEffect(() => {
@@ -98,98 +139,125 @@ export default function ManifestoPage() {
 
   if (loading) return <div className="p-10">Loading...</div>;
   if (error) return <div className="p-10 text-red-500">{error}</div>;
-  if (!data) return <div className="p-10">No manifesto found</div>;
-
-  const isPdf = data.pdf_file?.toLowerCase().endsWith('.pdf') ?? false;
-  const fileUrl = data.pdf_file || '/placeholder.png';
+  if (!dataArray.length) return <div className="p-10">No manifesto found</div>;
 
   return (
     <Container className="py-10">
-      {/* Card Preview */}
+      {/* Card Grid */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="rounded-3xl bg-white border hover:border-blue-200">
-          <div className="h-[400px] overflow-hidden flex justify-center items-center">
-            {isPdf ? (
-              <PDFDocument
-                file={fileUrl}
-                onLoadSuccess={(pdf: PDFDocumentProxy) => setNumPages(pdf.numPages)}
-                loading={<div>Loading preview...</div>}
-              >
-                <PDFPage pageNumber={1} width={400} />
-              </PDFDocument>
-            ) : (
-              <img src={fileUrl} className="w-full h-full object-contain" alt={data.title} />
-            )}
-          </div>
+        {dataArray.map((manifesto, index) => {
+          const isPdf = manifesto.pdf_file?.toLowerCase().endsWith('.pdf') ?? false;
+          const fileUrl = manifesto.pdf_file || '/placeholder.png';
+          const previewImage = previewImages[fileUrl] || null;
 
-          <div className="px-4 py-6 text-gray-600 flex flex-col justify-between">
-            <div>
-              <h1 className="text-base leading-5 mb-4">{data.title}</h1>
-              <p className="text-sm">{data.description}</p>
+          return (
+            <div key={index} className="rounded-3xl bg-white border hover:border-blue-200">
+              {/* Card Preview */}
+              <div className="h-[200px] w-full rounded-t-3xl overflow-hidden flex justify-center items-center">
+                {isPdf && previewImage ? (
+                  <img
+                    src={previewImage}
+                    className="h-full w-auto object-contain"
+                    alt={manifesto.title}
+                  />
+                ) : (
+                  <img
+                    src={fileUrl}
+                    className="h-full w-full object-cover"
+                    alt={manifesto.title}
+                  />
+                )}
+              </div>
+
+              {/* Card Content */}
+              <div className="px-4 py-6 text-gray-600 flex flex-col justify-between">
+                <div>
+                  <h1 className="text-base leading-5 mb-4">{manifesto.title}</h1>
+                  <div
+                    className="text-sm"
+                    dangerouslySetInnerHTML={{ __html: manifesto.description }}
+                  />
+                </div>
+
+                <div className="flex font-normal gap-4 mt-8">
+                  <a
+                    href={fileUrl}
+                    download
+                    target="_blank"
+                    className="inline-flex text-sm items-center justify-center px-4 py-3 hover:bg-gray-600 text-white rounded-full bg-gray-800 transition"
+                  >
+                    Download Manifesto
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      openModal(index);
+                      setShowModal(true);
+                    }}
+                    className="inline-flex text-sm items-center justify-center px-4 py-3 hover:bg-gray-200 border border-gray-300 rounded-full bg-white text-gray-800 transition"
+                  >
+                    View Manifesto
+                  </button>
+                </div>
+              </div>
             </div>
-
-            <div className="flex font-normal gap-4 mt-8">
-              <a
-                href={fileUrl}
-                download
-                target="_blank"
-                className="inline-flex text-sm items-center justify-center px-4 py-3 hover:bg-gray-600 text-white rounded-full bg-gray-800 transition"
-              >
-                Download Manifesto
-              </a>
-
-              <button
-                onClick={() => setShowModal(true)}
-                className="inline-flex text-sm items-center justify-center px-4 py-3 hover:bg-gray-200 border border-gray-300 rounded-full bg-white text-gray-800 transition"
-              >
-                View Manifesto
-              </button>
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </section>
 
-      {/* Modal: Full PDF */}
-      <div
-        className={`fixed inset-0 z-50 flex justify-center items-center p-4 bg-black/50
-          transition-opacity duration-300 ease-in-out
-          ${showModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
-        `}
-      >
+      {/* Modal */}
+      {activeIndex !== null && (
         <div
-          ref={modalRef}
-          className={`bg-white rounded-2xl w-[90%] max-w-4xl max-h-[90%] p-4 flex flex-col
-            transform transition-transform duration-300 ease-in-out
-            ${showModal ? 'scale-100' : 'scale-90'}
+          className={`fixed inset-0 z-50 flex justify-center items-center p-4 bg-black/50
+            transition-opacity duration-300 ease-in-out
+            ${showModal ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}
           `}
         >
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => setShowModal(false)}
-              className="text-gray-500 hover:text-gray-800 font-bold text-4xl"
-            >
-              ×
-            </button>
-          </div>
+          <div
+            ref={modalRef}
+            className={`bg-white rounded-2xl w-[90%] max-w-4xl max-h-[90%] p-4 flex flex-col
+              transform transition-transform duration-300 ease-in-out
+              ${showModal ? 'scale-100' : 'scale-90'}
+            `}
+          >
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-800 font-bold text-4xl"
+              >
+                ×
+              </button>
+            </div>
 
-          <div className="flex-1 overflow-auto flex flex-col items-center">
-            {isPdf ? (
-              <PDFDocument file={fileUrl} loading={<div>Loading PDF...</div>}>
-                {Array.from({ length: numPages }, (_, i) => (
-                  <PDFPage
-                    key={`page_${i + 1}`}
-                    pageNumber={i + 1}
-                    width={modalWidth}
-                    className="mb-4"
-                  />
-                ))}
-              </PDFDocument>
-            ) : (
-              <img src={fileUrl} className="object-contain w-full h-full" alt={data.title} />
-            )}
+            <div className="flex-1 overflow-auto flex flex-col items-center">
+              {dataArray[activeIndex].pdf_file?.toLowerCase().endsWith('.pdf') ? (
+                <PDFDocument
+                  file={dataArray[activeIndex].pdf_file}
+                  loading={<div>Loading PDF...</div>}
+                >
+                  {Array.from(
+                    { length: numPages[dataArray[activeIndex].pdf_file] || 0 },
+                    (_, i) => (
+                      <PDFPage
+                        key={`page_${i + 1}`}
+                        pageNumber={i + 1}
+                        width={modalWidth}
+                        className="mb-4"
+                      />
+                    )
+                  )}
+                </PDFDocument>
+              ) : (
+                <img
+                  src={dataArray[activeIndex].pdf_file || '/placeholder.png'}
+                  className="object-contain w-full h-full"
+                  alt={dataArray[activeIndex].title}
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </Container>
   );
 }

@@ -6,6 +6,7 @@ import Container from '@/app/components/layout/Container';
 import { useTranslations, useLocale } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { fetchPolicyBySlug } from '@/hooks/usePolicies';
+import { title } from 'process';
 
 type Policy = {
   id: string;
@@ -19,6 +20,8 @@ type Policy = {
 };
 
 export default function PolicyDetail() {
+
+  
   const t = useTranslations('policies');
   const locale = useLocale() as 'en' | 'np';
   const { slug } = useParams();
@@ -42,6 +45,8 @@ export default function PolicyDetail() {
     return <p className="text-center py-20 text-red-500 bg-[#f2f5f6]">{error}</p>;
 
   return (
+    <>
+      
     <section className="bg-[#f2f5f6] py-14">
    
       <Container className='mt-[123px] '>
@@ -66,5 +71,7 @@ export default function PolicyDetail() {
         </div>
       </Container>
     </section>
+        </>
+
   );
 }

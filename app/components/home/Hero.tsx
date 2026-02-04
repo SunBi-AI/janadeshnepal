@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useHero } from '@/hooks/useHero';
 import { useLocale } from 'next-intl';
+import HeroLoader from '../skeleton/HeroLoader';
 
 export default function Hero() {
   const locale = useLocale();
@@ -17,7 +18,7 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [data]);
 
-  if (loading || !data) return null;
+  if (loading || !data) return <HeroLoader/>;
 
   const title = locale === 'np' ? data.title_np : data.title_en;
   const subtitle = locale === 'np' ? data.subtitle_np : data.subtitle_en;

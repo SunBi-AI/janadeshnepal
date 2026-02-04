@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { usePolicies } from '@/hooks/usePolicies';
 import Link from 'next/link';
+import MetaTags from '@/app/components/layout/MetaTags';
 
 export default function Policies() {
   const t = useTranslations('policies');
@@ -46,6 +47,8 @@ export default function Policies() {
   }, [policies, activeCategory, search, locale]);
 
   return (
+    <>
+    <MetaTags slug="policies" />
     <section className="bg-[#fafafa]">
       <PageHeader slug="policies" />
 
@@ -145,5 +148,6 @@ export default function Policies() {
         )}
       </Container>
     </section>
+    </>
   );
 }
