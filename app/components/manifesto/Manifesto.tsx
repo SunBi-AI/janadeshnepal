@@ -99,7 +99,7 @@ export default function ManifestoPage() {
       setPdfError(null);
 
       try {
-        const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf');
+        const pdfjsLib = await import('pdfjs-dist/build/pdf');
         pdfjsLib.GlobalWorkerOptions.workerSrc =
           'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
 
