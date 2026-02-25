@@ -32,10 +32,14 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "**/*.d.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "declareModule": {
+    "pdfjs-dist/build/pdf": true
+  }
 }
