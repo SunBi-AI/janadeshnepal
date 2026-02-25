@@ -1,14 +1,8 @@
 import { useCachedApi } from './useCachedApi';
-
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
-
-if (!API_BASE) {
-  throw new Error('NEXT_PUBLIC_API_BASE is not defined');
-}
+import { buildApiUrl } from '@/lib/config';
 
 export async function fetchManifesto() {
-  const url = `${API_BASE}/manifesto/`;
+  const url = buildApiUrl('/manifesto/');
 
   console.log('Fetching:', url); // DEBUG
 

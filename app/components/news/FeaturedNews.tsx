@@ -2,12 +2,14 @@
 import { formatNepaliDate } from '@/utils/formatDate';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getLocalizedField } from '@/lib/utils/locale';
+import type { Blog } from '@/lib/types';
 
 export default function FeaturedNewsComponent({
   blog,
   locale,
 }: {
-  blog: any;
+  blog: Blog | null;
   locale: 'en' | 'np';
 }) {
   // Only render if blog exists
@@ -17,7 +19,7 @@ export default function FeaturedNewsComponent({
     <div className="relative h-[420px] hover:shadow-md rounded-3xl overflow-hidden my-8">
       <Image
         src={blog.featured_image || '/images/news-placeholder.jpg'}
-        alt={locale === 'np' ? blog.title_np : blog.title_en}
+        alt={getLocalizedField(blog, 'title', locale)}
         fill
         className="object-cover"
       />
@@ -30,7 +32,7 @@ export default function FeaturedNewsComponent({
         </span>
 
         <h3 className="text-3xl font-bold mb-3">
-          {locale === 'np' ? blog.title_np : blog.title_en}
+          {getLocalizedField(blog, 'title', locale)}
         </h3>
 
         <p className="text-sm opacity-80">

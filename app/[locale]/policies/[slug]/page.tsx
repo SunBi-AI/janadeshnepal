@@ -6,7 +6,7 @@ import Container from '@/app/components/layout/Container';
 import { useTranslations, useLocale } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { fetchPolicyBySlug } from '@/hooks/usePolicies';
-import { title } from 'process';
+import { getLocalizedField } from '@/lib/utils/locale';
 
 type Policy = {
   id: string;
@@ -58,7 +58,7 @@ export default function PolicyDetail() {
           </span>
 
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            {locale === 'np' ? policy.title_ne : policy.title}
+            {getLocalizedField(policy, 'title', locale === 'np' ? 'np' : 'en').replace('_ne', '')}
           </h1>
 
           <p className="text-gray-700 mb-6">

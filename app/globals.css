@@ -1,9 +1,10 @@
+@import url('https://cdn.jsdelivr.net/npm/@iconify-json/hugeicons@1.2.23/+esm');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 @plugin "daisyui";
 
-@import url('https://cdn.jsdelivr.net/npm/@iconify-json/hugeicons@1.2.23/+esm');
 :root {
   --background: #ffffff;
   --foreground: #171717;

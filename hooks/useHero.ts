@@ -1,4 +1,5 @@
 import { useCachedApi } from './useCachedApi';
+import { buildApiUrl } from '@/lib/config';
 
 export type Hero = {
   title_en: string;
@@ -16,7 +17,7 @@ export type Hero = {
 };
 
 export const fetchHero = async () => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/hero-section/`);
+  const res = await fetch(buildApiUrl('/hero-section/'));
   if (!res.ok) throw new Error('Failed to fetch hero section');
   return res.json();
 };

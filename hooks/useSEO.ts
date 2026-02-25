@@ -1,6 +1,7 @@
 // hooks/useSEO.ts
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { buildApiUrl } from '@/lib/config';
 
 export interface SEOData {
   id: number;
@@ -19,8 +20,6 @@ export interface SEOData {
 const LOCAL_STORAGE_KEY = 'seoData';
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24h
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE!;
-
 export const useSEO = (slug: string) => {
   return useQuery<SEOData | null>({
     queryKey: ['seo', slug],
@@ -35,7 +34,7 @@ export const useSEO = (slug: string) => {
       }
 
       // ✅ Correct API base
-      const res = await axios.get(`${API_BASE}/seo/`);
+      const res = await axios.get(buildApiUrl('/seo/'));
       const seoList: SEOData[] = res.data.results;
 
       const seoListUpdated = seoList.map(item => ({

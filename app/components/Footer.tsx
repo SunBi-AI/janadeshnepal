@@ -1,38 +1,19 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { usePathname } from 'next/navigation';
-import { useSocialLinks } from '@/hooks/useSocialLinks';
-import {
-  Facebook,
-  Instagram,
-  Youtube,
-  Twitter,
-  Menu,
-  X
-} from 'lucide-react';
+import { useSocialLinks, SocialLink } from '@/hooks/useSocialLinks';
 import Container from './layout/Container';
 import DynamicHugeicon from './DynamicIcon';
+import { navigationLinks, NavigationLink } from '@/lib/constants/navigation';
 
 export default function Footer() {
   const locale = useLocale();
   const t = useTranslations('footer');
   const pathname = usePathname();
   const { data: socialLinks = [] } = useSocialLinks();
-
-  const links = [
-    { href: '/', key: 'home' },
-    { href: '/about', key: 'about' },
-    { href: '/core-values', key: 'coreValues' },
-    { href: '/manifesto', key: 'manifesto' },
-    { href: '/policies', key: 'policies' },
-    { href: '/leadership', key: 'leadership' },
-    { href: '/register', key: 'join' },
-    { href: '/news', key: 'news' },
-    { href: '/contact', key: 'contact' }
-  ];
 
   return (
     <footer className="w-full bg-[#fafafa] border-t border-gray-200">
@@ -55,11 +36,10 @@ export default function Footer() {
                     {t('quickLinks')}
               </h2>
 
-              {links.map((link) => (
+              {navigationLinks.map((link: NavigationLink) => (
                 <Link
                   key={link.key}
                   href={link.href}
-                  locale={locale}
                   className={`text-base text-[#144a7b] text-start hover:text-green-600 ${
                     pathname === link.href ? 'font-bold' : ''
                   }`}
@@ -90,16 +70,20 @@ export default function Footer() {
                 {t('connect')}
               </h2>
               <div className="">
-                {socialLinks.map((item) => (
+                {socialLinks.map((item: SocialLink) => (
                   <div className="flex flex-col items-start mb-2" key={item.id}>
-                    <Link key={item.id} href={item.url} target="_blank">
+                    <Link 
+                      href={item.url} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Visit our ${item.platform_display}`}
+                    >
                       <div className="flex gap-2">
-                        <DynamicHugeicon iconName={item.icon} size={24} color="blue" />
+                        <DynamicHugeicon iconName={item.icon} size={24} color="#144a7b" />
                         <span className="text-base text-[#144a7b] hover:text-green-600">
                           {item.platform_display}
                         </span>
                       </div>
-
                     </Link>
                   </div>
                 ))}

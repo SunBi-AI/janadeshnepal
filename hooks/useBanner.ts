@@ -1,6 +1,7 @@
 // hooks/useBanner.ts
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
+import { buildApiUrl } from '@/lib/config';
 
 export interface Banner {
   id: number;
@@ -29,7 +30,7 @@ export const useBanner = (slug: string) => {
       }
 
       // Fetch from API
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE}/banner/`);
+      const res = await axios.get(buildApiUrl('/banner/'));
       const banners: Banner[] = res.data.results;
 
       // Store in localStorage

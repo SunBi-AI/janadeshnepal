@@ -1,6 +1,9 @@
-import { clsx } from 'clsx';
+import { clsx, ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export function cn(...inputs: any[]) {
+/**
+ * Merges Tailwind CSS classes with proper precedence
+ */
+export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

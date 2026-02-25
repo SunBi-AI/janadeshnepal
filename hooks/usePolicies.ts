@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
-if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
+import { buildApiUrl } from '@/lib/config';
 
 export async function fetchPolicies() {
-  const res = await fetch(`${API_BASE}/policies/`);
+  const res = await fetch(buildApiUrl('/policies/'));
   if (!res.ok) throw new Error('Failed to fetch policies');
   return res.json();
 }
@@ -20,7 +18,7 @@ export function usePolicies() {
 
 
 export async function fetchPolicyBySlug(slug: string) {
-  const res = await fetch(`${API_BASE}/policies/${slug}/`);
+  const res = await fetch(buildApiUrl(`/policies/${slug}/`));
   if (!res.ok) throw new Error('Policy not found');
   return res.json();
 }

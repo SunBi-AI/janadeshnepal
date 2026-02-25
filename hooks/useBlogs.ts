@@ -1,10 +1,8 @@
 import { useCachedApi } from './useCachedApi';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
-if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
+import { buildApiUrl } from '@/lib/config';
 
 async function fetchBlogs(locale: 'en' | 'np') {
-  const res = await fetch(`${API_BASE}/blogs?lang=${locale}`);
+  const res = await fetch(buildApiUrl(`/blogs?lang=${locale}`));
   if (!res.ok) throw new Error('Failed to fetch blogs');
   const data = await res.json();
 

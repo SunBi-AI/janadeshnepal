@@ -1,21 +1,18 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
+import { Link } from '@/i18n/routing';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import {
-  Facebook,
-  Instagram,
-  Youtube,
-  Twitter,
   Menu,
   X
 } from 'lucide-react';
 import DynamicHugeicon from '../components/DynamicIcon';
 import Container from './layout/Container';
 import { useSocialLinks } from '@/hooks/useSocialLinks';
+import { navigationLinks } from '@/lib/constants/navigation';
 
 export default function Navbar() {
   const locale = useLocale();
@@ -36,18 +33,6 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const links = [
-    { href: '/', key: 'home' },
-    { href: '/about', key: 'about' },
-    { href: '/core-values', key: 'coreValues' },
-    { href: '/manifesto', key: 'manifesto' },
-    { href: '/policies', key: 'policies' },
-    { href: '/leadership', key: 'leadership' },
-    { href: '/register', key: 'join' },
-    { href: '/news', key: 'news' },
-    { href: '/contact', key: 'contact' }
-  ];
 
   return (
     <header
@@ -90,9 +75,14 @@ export default function Navbar() {
                 <a href="mailto:info@janadeshnepal.org">info@janadeshnepal.org</a>
                 <div className="flex items-center gap-4">
                   {socialLinks.map((item) => (
-                    <Link key={item.id} href={item.url} target="_blank">
-                      <DynamicHugeicon iconName={item.icon} size={24} color="blue" />
-
+                    <Link 
+                      key={item.id} 
+                      href={item.url} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Visit our ${item.platform_display}`}
+                    >
+                      <DynamicHugeicon iconName={item.icon} size={24} color="#555e6d" />
                     </Link>
                   ))}
 
@@ -112,11 +102,10 @@ export default function Navbar() {
                   }
                 `}
               >
-                {links.map(({ href, key }) => (
+                {navigationLinks.map(({ href, key }) => (
                   <Link
                     key={key}
                     href={href}
-                    locale={locale}
                     className={`
                       transition hover:text-green-600
                       ${cleanPathname === href
@@ -135,6 +124,8 @@ export default function Navbar() {
           <button
             className="ml-auto max-[900px]:block hidden text-gray-800"
             onClick={() => setOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={open}
           >
             <Menu size={28} />
           </button>
@@ -174,25 +165,32 @@ export default function Navbar() {
                 <div className="flex gap-4 items-center">
                   <LanguageSwitcher currentLocale={locale as 'en' | 'np'} />
                   {socialLinks.map((item) => (
-                    <Link key={item.id} href={item.url} target="_blank">
-                      <DynamicHugeicon iconName={item.icon} size={24} color="blue" />
-
+                    <Link 
+                      key={item.id} 
+                      href={item.url} 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Visit our ${item.platform_display}`}
+                    >
+                      <DynamicHugeicon iconName={item.icon} size={24} color="#68707c" />
                     </Link>
                   ))}
                 </div>
               </div>
             </div>
-            <button onClick={() => setOpen(false)}>
+            <button 
+              onClick={() => setOpen(false)}
+              aria-label="Close navigation menu"
+            >
               <X size={26} />
             </button>
           </div>
 
           <nav className="flex flex-col gap-5">
-            {links.map(({ href, key }) => (
+            {navigationLinks.map(({ href, key }) => (
               <Link
                 key={key}
                 href={href}
-                locale={locale}
                 onClick={() => setOpen(false)}
                 className="text-lg text-gray-700 hover:text-green-600 transition-colors"
               >

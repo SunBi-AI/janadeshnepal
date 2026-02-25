@@ -1,11 +1,7 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
-
-if (!API_BASE) {
-  throw new Error('NEXT_PUBLIC_API_BASE is not defined');
-}
+import { buildApiUrl } from './config';
 
 export async function fetchLeadership(locale: 'en' | 'np') {
-  const res = await fetch(`${API_BASE}/leadership?lang=${locale}`);
+  const res = await fetch(buildApiUrl(`/leadership?lang=${locale}`));
 
   if (!res.ok) {
     throw new Error('Failed to fetch leadership data');

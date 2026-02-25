@@ -1,7 +1,7 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
+import { buildApiUrl } from './config';
 
 export async function fetchBlogBySlug(slug: string, locale: 'en' | 'np') {
-  const res = await fetch(`${API_BASE}/blogs/${slug}?lang=${locale}`);
+  const res = await fetch(buildApiUrl(`/blogs/${slug}?lang=${locale}`));
 
   if (!res.ok) throw new Error('Failed to fetch blog');
   return res.json();
@@ -9,7 +9,7 @@ export async function fetchBlogBySlug(slug: string, locale: 'en' | 'np') {
 
 // Example: fetch all blogs
 export async function fetchAllBlogs(locale: 'en' | 'np') {
-  const res = await fetch(`${API_BASE}/blogs?lang=${locale}`);
+  const res = await fetch(buildApiUrl(`/blogs?lang=${locale}`));
 
   if (!res.ok) throw new Error('Failed to fetch blogs');
   return res.json();

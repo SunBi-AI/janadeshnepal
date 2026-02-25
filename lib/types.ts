@@ -15,13 +15,12 @@ export interface Blog {
   date: string;
   featured_image: string;
   category: BlogCategory;
-  excerpt_np:string;
-  excerpt_en:string;
-  published_at:string;
-  status:boolean;
-  view_count:string;
-  is_featured:boolean;
-   
+  excerpt_np: string;
+  excerpt_en: string;
+  published_at: string;
+  is_published: boolean;
+  view_count: number;
+  is_featured: boolean;
 }
 
 export type Manifesto = {

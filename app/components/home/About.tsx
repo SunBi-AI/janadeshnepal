@@ -3,6 +3,8 @@ import { useLocale } from 'next-intl';
 import Image from 'next/image';
 import Container from '../layout/Container';
 import { useQuery } from '@tanstack/react-query';
+import { buildApiUrl } from '@/lib/config';
+import { getLocalizedField } from '@/lib/utils/locale';
 
 /* ===================== TYPES ===================== */
 
@@ -37,18 +39,14 @@ type ServiceItem = {
 /* ===================== FETCHERS ===================== */
 
 const fetchAboutMovement = async (): Promise<AboutMovementItem | null> => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE}/about-movement/`
-  );
+  const res = await fetch(buildApiUrl('/about-movement/'));
   if (!res.ok) throw new Error('Failed to fetch about movement data');
   const data: ApiResponse<AboutMovementItem> = await res.json();
   return data.results?.[0] ?? null;
 };
 
 const fetchServices = async (): Promise<ServiceItem[]> => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE}/services/`
-  );
+  const res = await fetch(buildApiUrl('/services/'));
   if (!res.ok) throw new Error('Failed to fetch services');
   const data: ApiResponse<ServiceItem> = await res.json();
   return data.results;
@@ -57,6 +55,8 @@ const fetchServices = async (): Promise<ServiceItem[]> => {
 /* ===================== COMPONENT ===================== */
 
 export default function AboutMovement() {
+  const locale = useLocale() as 'en' | 'np';
+
   const { data: aboutData, isLoading: aboutLoading } = useQuery({
     queryKey: ['about-movement'],
     queryFn: fetchAboutMovement,
@@ -69,7 +69,6 @@ export default function AboutMovement() {
 
   if (aboutLoading || servicesLoading) return null;
   if (!aboutData || !services) return null;
-  const locale = useLocale() as 'en' | 'np';
 
   return (
     <section className="bg-white py-12">
@@ -98,12 +97,12 @@ export default function AboutMovement() {
                   <Image
                     src={item.image}
                     alt={item.title_np}
-                    width={54}
-                    height={54}
+                    width={64}
+                    height={64}
                   />
                 )}
-                <p className="mt-4 text-base font-medium text-blue-600 text-center">
-                  {locale === 'np' ? item.title_np : item.title_en}
+                <p className="mt-4 text-base font-medium text-blue-600 px-4 text-center">
+                  {getLocalizedField(item, 'title', locale)}
                 </p>
               </div>
             ))}

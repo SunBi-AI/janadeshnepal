@@ -9,6 +9,23 @@ type CacheItem<T> = {
 
 const memoryCache = new Map<string, CacheItem<any>>();
 
+// Cleanup expired cache entries periodically
+function cleanupCache() {
+  const now = Date.now();
+  const keys = Array.from(memoryCache.keys());
+  for (const key of keys) {
+    const value = memoryCache.get(key);
+    if (value && value.expiry < now) {
+      memoryCache.delete(key);
+    }
+  }
+}
+
+// Run cleanup every 5 minutes (only on client)
+if (typeof window !== 'undefined') {
+  setInterval(cleanupCache, 1000 * 60 * 5);
+}
+
 export function useCachedApi<T>(
   key: string,
   fetcher: () => Promise<T>,
@@ -56,6 +73,6 @@ export function useCachedApi<T>(
     data,
     loading,
     error,
-    isError: !!error,   // <-- optional alias
+    isError: !!error,
   };
 }

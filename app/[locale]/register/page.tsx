@@ -5,8 +5,7 @@ import { ChevronRight, ChevronLeft, Check, User, FileText, Upload, CheckCircle }
 import PageHeader from '../../components/layout/PageHeader';
 import { useTranslations, useLocale } from 'next-intl';
 import MetaTags from '@/app/components/layout/MetaTags';
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
-if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
+import { buildApiUrl } from '@/lib/config';
 
 const MembershipFormBasic = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -104,7 +103,7 @@ const MembershipFormBasic = () => {
       payload.append('motivation', formData.motivation || '');
       payload.append('rejection_reason', '');
 
-      const res = await fetch(`${API_BASE}/membership-registrations/`, {
+      const res = await fetch(buildApiUrl('/membership-registrations/'), {
         method: 'POST',
         body: payload,
       });

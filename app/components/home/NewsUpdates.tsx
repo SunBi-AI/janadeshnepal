@@ -6,6 +6,8 @@ import { useBlogs } from '@/hooks/useBlogs';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import { formatNepaliDate } from '@/utils/formatDate';
+import { getLocalizedField } from '@/lib/utils/locale';
+import { Blog } from '@/lib/types';
 
 export default function NewsUpdates() {
   const locale = useLocale() as 'en' | 'np';
@@ -38,7 +40,7 @@ export default function NewsUpdates() {
             
             <Image
               src={featured.featured_image}
-              alt={locale === 'np' ? featured.title_np : featured.title_en}
+              alt={getLocalizedField(featured, 'title', locale)}
                width={400}
             height={400}
             className="object-cover object-top w-full h-full"
@@ -46,7 +48,7 @@ export default function NewsUpdates() {
 
             <div className="absolute inset-0 bg-gradient-to-t from-[#1E88E5]/90 to-transparent flex flex-col justify-end p-8">
               <h3 className="text-white font-bold text-lg mb-1">
-                {locale === 'np' ? featured.title_np : featured.title_en}
+                {getLocalizedField(featured, 'title', locale)}
               </h3>
               <p className="text-white text-xs">  {formatNepaliDate(featured.published_at, locale)}
 </p>
@@ -57,14 +59,15 @@ export default function NewsUpdates() {
         </div>
 
         <div className=" space-y-6  ">
-          {list.map((blog: any) => (
+          {list.map((blog: Blog) => (
             <Link
-key={blog.id}
-              href={`/${locale}/news/${blog.slug}`}              className="
-    group flex gap-4 border-b border-gray-200 rounded-lg p-4
-    transition-colors duration-500
-    hover:bg-gray-200
-  "
+              key={blog.id}
+              href={`/${locale}/news/${blog.slug}`}
+              className="
+                group flex gap-4 border-b border-gray-200 rounded-lg p-4
+                transition-colors duration-500
+                hover:bg-gray-200
+              "
             >
               <div className="mt-1">
                 <svg
@@ -90,7 +93,7 @@ key={blog.id}
                 <h4
                   className=" text-gray-600 font-medium text-base mb-1 transition-colors duration-300 group-hover:text-green-500 "
                 >
-                  {locale === 'np' ? blog.title_np : blog.title_en}
+                  {getLocalizedField(blog, 'title', locale)}
                 </h4>
 
                 <p className="text-gray-400 text-xs mb-1">  {formatNepaliDate(blog.published_at, locale)}</p>

@@ -6,6 +6,7 @@ import { useRef } from 'react';
 import { useLocale } from 'next-intl';
 import Container from '../layout/Container';
 import { useTimeline } from '@/hooks/useTimeline';
+import { getLocalizedField } from '@/lib/utils/locale';
 
 export default function Timeline() {
   const locale = useLocale() as 'en' | 'np';
@@ -68,7 +69,7 @@ function TimelineItem({ item, reverse, locale }: any) {
         >
           <Image
             src={item.image}
-            alt={locale === 'np' ? item.title_np : item.title_en}
+            alt={getLocalizedField(item, 'title', locale)}
             fill
             className="object-cover"
           />
@@ -80,7 +81,7 @@ function TimelineItem({ item, reverse, locale }: any) {
         <span className="text-gray-400 text-sm">{item.year}</span>
 
         <h3 className="text-xl text-[#2772b0] font-semibold mt-2">
-          {locale === 'np' ? item.title_np : item.title_en}
+          {getLocalizedField(item, 'title', locale)}
         </h3>
 
         <p className="text-gray-600 text-base font-normal mt-2 leading-relaxed"

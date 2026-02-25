@@ -38,6 +38,7 @@ export default function LanguageSwitcher({
       {/* EN */}
       <button
         onClick={() => switchLocale('en')}
+        aria-label="Switch to English"
         className={`relative z-10 w-7 text-xs font-medium transition-colors ${
           currentLocale === 'en' ? 'text-white' : 'text-gray-500'
         }`}
@@ -48,6 +49,7 @@ export default function LanguageSwitcher({
       {/* NP */}
       <button
         onClick={() => switchLocale('np')}
+        aria-label="Switch to Nepali"
         className={`relative z-10 w-7 text-xs font-medium transition-colors ${
           currentLocale === 'np' ? 'text-white' : 'text-gray-500'
         }`}

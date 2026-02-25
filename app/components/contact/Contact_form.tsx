@@ -2,10 +2,7 @@
 
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE; 
-
-if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
+import { buildApiUrl } from '@/lib/config';
 
 type ContactPayload = {
   name: string;
@@ -16,7 +13,7 @@ type ContactPayload = {
 };
 
 async function submitContact(data: ContactPayload) {
-  const res = await fetch(`${API_BASE}/contacts/`, {
+  const res = await fetch(buildApiUrl('/contacts/'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

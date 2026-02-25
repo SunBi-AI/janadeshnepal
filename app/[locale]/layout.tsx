@@ -1,7 +1,10 @@
 import { NextIntlClientProvider } from "next-intl";
-import Footer from "../components/footer";
+import { getMessages } from "next-intl/server";
+import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { Roboto } from "next/font/google";
+import Script from "next/script";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 import "../globals.css";
 
 export const metadata = {
@@ -20,20 +23,33 @@ const roboto = Roboto({
 
 export default async function LocaleLayout({
   children,
-  params: { locale },
+  params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  const messages = (await import(`../../messages/${locale}.json`)).default;
+  const { locale } = await params;
+  const messages = await getMessages();
 
   return (
     <html lang={locale} className={`${roboto.className} bg-[#f2f5f6]`}>
+      <head>
+        <link 
+          rel="stylesheet" 
+          href="https://cdn.hugeicons.com/font/hgi-stroke.css"
+        />
+        <Script
+          src="https://cdn.jsdelivr.net/npm/@iconify-json/hugeicons@1.2.23/index.min.js"
+          strategy="beforeInteractive"
+        />
+      </head>
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
+          <ErrorBoundary>
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </ErrorBoundary>
         </NextIntlClientProvider>
       </body>
     </html>

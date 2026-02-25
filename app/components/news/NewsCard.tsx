@@ -1,6 +1,7 @@
 import { formatNepaliDate } from '@/utils/formatDate';
 import Image from 'next/image';
 import Link from 'next/link';
+import { getLocalizedField } from '@/lib/utils/locale';
 export default function NewsCard({
   blog,
   locale,
@@ -13,7 +14,7 @@ export default function NewsCard({
       <div className="relative h-48">
         <Image
           src={blog.featured_image || '/images/news-placeholder.jpg'}
-          alt={locale === 'np' ? blog.title_np : blog.title_en}
+          alt={getLocalizedField(blog, 'title', locale)}
           fill
           className="object-cover"
         />
@@ -28,7 +29,7 @@ export default function NewsCard({
         </span>
 
         <h3 className="font-medium text-lg text-green-600 mt-2">
-          {locale === 'np' ? blog.title_np : blog.title_en}
+          {getLocalizedField(blog, 'title', locale)}
         </h3>
 
         <p className="text-sm text-gray-500 mt-2"> {formatNepaliDate(blog.published_at, locale)}</p>

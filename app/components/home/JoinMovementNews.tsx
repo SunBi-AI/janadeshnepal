@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import Container from '../layout/Container';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
-if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
+import { buildApiUrl } from '@/lib/config';
 
 /* ---------------- TYPES ---------------- */
 type Campaign = {
@@ -36,7 +34,7 @@ export default function JoinMovementNews() {
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const res = await fetch(`${API_BASE}/campaigns/`);
+        const res = await fetch(buildApiUrl('/campaigns/'));
         const data = await res.json();
         setCampaigns(data.results || []);
       } catch (err) {
@@ -67,7 +65,7 @@ export default function JoinMovementNews() {
         availability: '',
       };
 
-      const res = await fetch(`${API_BASE}/volunteers/`, {
+      const res = await fetch(buildApiUrl('/volunteers/'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

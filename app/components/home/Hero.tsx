@@ -2,38 +2,51 @@
 import Image from 'next/image';
 import Container from '../layout/Container';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHero } from '@/hooks/useHero';
+import { useBlogs } from '@/hooks/useBlogs';
 import { useLocale } from 'next-intl';
 import HeroLoader from '../skeleton/HeroLoader';
+import { buildMediaUrl } from '@/lib/config';
+import { getLocalizedField } from '@/lib/utils/locale';
+import type { Blog } from '@/lib/types';
 
 export default function Hero() {
   const locale = useLocale();
+  const localeKey = locale as 'en' | 'np';
   const { data, loading } = useHero();
+  const { data: blogs } = useBlogs(localeKey);
   const [index, setIndex] = useState(0);
 
+  const newsItems = useMemo(() => {
+    const blogList = blogs as Blog[] | null;
+    if (blogList?.length) {
+      return blogs
+        .map((blog: Blog) => getLocalizedField(blog, 'title', localeKey))
+        .filter(Boolean);
+    }
+
+    return data?.hero_news ?? [];
+  }, [blogs, data?.hero_news, localeKey]);
+
   useEffect(() => {
-    if (!data?.hero_news?.length) return;
-    const interval = setInterval(() => setIndex((prev) => (prev + 1) % data.hero_news.length), 4000);
+    setIndex(0);
+    if (!newsItems.length) return;
+    const interval = setInterval(
+      () => setIndex((prev) => (prev + 1) % newsItems.length),
+      4000
+    );
     return () => clearInterval(interval);
-  }, [data]);
+  }, [newsItems]);
 
   if (loading || !data) return <HeroLoader/>;
 
-  const title = locale === 'np' ? data.title_np : data.title_en;
-  const subtitle = locale === 'np' ? data.subtitle_np : data.subtitle_en;
-  const buttonText = locale === 'np' ? data.button_text_np : data.button_text_en;
+  const title = getLocalizedField(data, 'title', localeKey);
+  const subtitle = getLocalizedField(data, 'subtitle', localeKey);
+  const buttonText = getLocalizedField(data, 'button_text', localeKey);
 
-
-const MEDIA = process.env.NEXT_PUBLIC_MEDIA_BASE;
-
-const profileImage = data.profile_image
-  ? `${MEDIA}${data.profile_image}`
-  : '/assets/hero_section.png';
-
-const backgroundImage = data.background_image
-  ? `${MEDIA}${data.background_image}`
-  : '/assets/background.jpg';
+  const profileImage = buildMediaUrl(data.profile_image) || '/assets/hero_section.png';
+  const backgroundImage = buildMediaUrl(data.background_image) || '/assets/background.jpg';
 
   return (
     <>
@@ -121,7 +134,7 @@ const backgroundImage = data.background_image
                     📅
                   </span>
                   <span className="animate-fade">
-                    {data.hero_news[index]}
+                    {newsItems[index]}
                   </span>
                 </div>
               </Container>

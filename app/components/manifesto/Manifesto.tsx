@@ -1,24 +1,8 @@
 'use client';
 
-import { useEffect, useState, useRef, ComponentType } from 'react';
-import dynamic from 'next/dynamic';
+import { useEffect, useState, useRef } from 'react';
 import Container from '../layout/Container';
 import { fetchManifesto } from '@/hooks/manifestos';
-import { pdfjs } from 'react-pdf';
-import PDFWorker from 'pdfjs-dist/legacy/build/pdf.worker.entry';
-
-// --- Set PDF.js worker ---
-pdfjs.GlobalWorkerOptions.workerSrc = PDFWorker;
-
-// --- Dynamic imports for SSR-free PDF components ---
-const PDFDocument = dynamic(
-  () => import('react-pdf').then((mod) => mod.Document as ComponentType<any>),
-  { ssr: false }
-);
-const PDFPage = dynamic(
-  () => import('react-pdf').then((mod) => mod.Page as ComponentType<any>),
-  { ssr: false }
-);
 
 // --- Manifesto type ---
 type Manifesto = {
@@ -30,7 +14,6 @@ type Manifesto = {
 // --- Cache constants ---
 const LOCAL_STORAGE_KEY = 'manifestos';
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
-const PREVIEW_HEIGHT = 600; // px for card preview
 
 export default function ManifestoPage() {
   const [dataArray, setDataArray] = useState<Manifesto[]>([]);
@@ -38,8 +21,6 @@ export default function ManifestoPage() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [modalWidth, setModalWidth] = useState<number>(800);
-  const [numPages, setNumPages] = useState<{ [key: string]: number }>({});
-  const [previewImages, setPreviewImages] = useState<{ [key: string]: string }>({});
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -78,43 +59,6 @@ export default function ManifestoPage() {
     loadData();
   }, []);
 
-  // --- Generate PDF previews for all manifestos ---
-  useEffect(() => {
-    const generatePreviews = async () => {
-      const images: { [key: string]: string } = {};
-      const pages: { [key: string]: number } = {};
-
-      for (const manifesto of dataArray) {
-        if (manifesto.pdf_file?.toLowerCase().endsWith('.pdf')) {
-          try {
-            const pdf = await pdfjs.getDocument(manifesto.pdf_file).promise;
-            pages[manifesto.pdf_file] = pdf.numPages;
-
-            const page = await pdf.getPage(1);
-            const viewport = page.getViewport({ scale: 1 });
-            const scale = PREVIEW_HEIGHT / viewport.height;
-            const scaledViewport = page.getViewport({ scale });
-
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d')!;
-            canvas.width = scaledViewport.width;
-            canvas.height = scaledViewport.height;
-
-            await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
-            images[manifesto.pdf_file] = canvas.toDataURL();
-          } catch (err) {
-            console.error('Error generating PDF preview:', err);
-          }
-        }
-      }
-
-      setPreviewImages(images);
-      setNumPages(pages);
-    };
-
-    if (dataArray.length) generatePreviews();
-  }, [dataArray]);
-
   // --- Close modal when clicking outside ---
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -146,40 +90,33 @@ export default function ManifestoPage() {
       {/* Card Grid */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {dataArray.map((manifesto, index) => {
-          const isPdf = manifesto.pdf_file?.toLowerCase().endsWith('.pdf') ?? false;
-          const fileUrl = manifesto.pdf_file || '/placeholder.png';
-          const previewImage = previewImages[fileUrl] || null;
+          const fileUrl = manifesto.pdf_file || '/assets/logo_janadesh.png';
 
           return (
             <div key={index} className="rounded-3xl bg-white border hover:border-blue-200">
               {/* Card Preview */}
-              <div className="h-[200px] w-full rounded-t-3xl overflow-hidden flex justify-center items-center">
-                {isPdf && previewImage ? (
-                  <img
-                    src={previewImage}
-                    className="h-full w-auto object-contain"
-                    alt={manifesto.title}
-                  />
-                ) : (
-                  <img
-                    src={fileUrl}
-                    className="h-full w-full object-cover"
-                    alt={manifesto.title}
-                  />
-                )}
+              <div className="h-[200px] w-full rounded-t-3xl overflow-hidden flex justify-center items-center bg-gray-100">
+                <img
+                  src={fileUrl}
+                  className="h-full w-auto object-contain"
+                  onError={(event) => {
+                    event.currentTarget.src = '/assets/logo_janadesh.png';
+                  }}
+                  alt={manifesto.title}
+                />
               </div>
 
               {/* Card Content */}
               <div className="px-4 py-6 text-gray-600 flex flex-col justify-between">
                 <div>
-                  <h1 className="text-base leading-5 mb-4">{manifesto.title}</h1>
+                  <h1 className="text-base leading-5 line-clamp-1  mb-4">{manifesto.title}</h1>
                   <div
-                    className="text-sm"
+                    className="text-sm  line-clamp-2"
                     dangerouslySetInnerHTML={{ __html: manifesto.description }}
                   />
                 </div>
 
-                <div className="flex font-normal gap-4 mt-8">
+                <div className="  flex font-normal gap-4 mt-8">
                   <a
                     href={fileUrl}
                     download
@@ -231,22 +168,11 @@ export default function ManifestoPage() {
 
             <div className="flex-1 overflow-auto flex flex-col items-center">
               {dataArray[activeIndex].pdf_file?.toLowerCase().endsWith('.pdf') ? (
-                <PDFDocument
-                  file={dataArray[activeIndex].pdf_file}
-                  loading={<div>Loading PDF...</div>}
-                >
-                  {Array.from(
-                    { length: numPages[dataArray[activeIndex].pdf_file] || 0 },
-                    (_, i) => (
-                      <PDFPage
-                        key={`page_${i + 1}`}
-                        pageNumber={i + 1}
-                        width={modalWidth}
-                        className="mb-4"
-                      />
-                    )
-                  )}
-                </PDFDocument>
+                <iframe
+                  src={`${dataArray[activeIndex].pdf_file}#toolbar=0&navpanes=0&scrollbar=0`}
+                  className="w-full h-full border-none"
+                  title={`${dataArray[activeIndex].title} PDF`}
+                />
               ) : (
                 <img
                   src={dataArray[activeIndex].pdf_file || '/placeholder.png'}

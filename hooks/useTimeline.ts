@@ -1,11 +1,9 @@
 // src/hooks/useTimeline.ts
 import { useQuery } from '@tanstack/react-query';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
-if (!API_BASE) throw new Error('NEXT_PUBLIC_API_BASE is not defined');
+import { buildApiUrl } from '@/lib/config';
 
 export async function fetchTimeline() {
-  const res = await fetch(`${API_BASE}/timeline/`); // API endpoint
+  const res = await fetch(buildApiUrl('/timeline/')); // API endpoint
   if (!res.ok) throw new Error('Failed to fetch timeline data');
   return res.json();
 }

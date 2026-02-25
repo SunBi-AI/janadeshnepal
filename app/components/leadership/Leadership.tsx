@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import Container from '../layout/Container';
 import { useLeadership } from '@/hooks/useLeadership';
+import { getLocalizedField } from '@/lib/utils/locale';
 
 export default function LeadershipPage() {
   const locale = useLocale() as 'np' | 'en';
@@ -33,7 +34,7 @@ if (!data || data.length === 0) {
               <div className="relative w-full h-[320px] bg-sky-600">
                 <Image
                   src={leader.image || '/images/avatar-placeholder.png'}
-                  alt={locale === 'np' ? leader.name_np : leader.name_en}
+                  alt={getLocalizedField(leader, 'name', locale)}
                   fill
                   className="object-cover object-top"
                 />
@@ -44,7 +45,7 @@ if (!data || data.length === 0) {
 
                 <div className="flex items-center justify-center px-4 py-2 border-b border-gray-200 transition ease-in-out duration-500">
                   <span className="text-[17px] font-normal text-blue-500">   
-                     {locale === 'np' ? leader.name_np : leader.name_en}
+                     {getLocalizedField(leader, 'name', locale)}
                   </span>
                 </div>
 
