@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import Container from '../layout/Container';
 import { fetchManifesto } from '@/hooks/manifestos';
+import { buildMediaUrl } from '@/lib/config';
 
 // --- Manifesto type ---
 type Manifesto = {
@@ -22,7 +23,10 @@ export default function ManifestoPage() {
   const [showModal, setShowModal] = useState(false);
   const [modalWidth, setModalWidth] = useState<number>(800);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
 
   const openModal = (index: number) => setActiveIndex(index);
 
@@ -81,6 +85,54 @@ export default function ManifestoPage() {
     return () => window.removeEventListener('resize', updateWidth);
   }, [showModal]);
 
+  useEffect(() => {
+    const loadPdf = async () => {
+      if (!showModal || activeIndex === null) return;
+      const pdfPath = dataArray[activeIndex]?.pdf_file || '';
+      const isPdf = pdfPath.toLowerCase().endsWith('.pdf');
+      const container = pdfContainerRef.current;
+
+      if (!container || !isPdf) return;
+
+      container.innerHTML = '';
+      setPdfLoading(true);
+      setPdfError(null);
+
+      try {
+        const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf');
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+        const pdfUrl = buildMediaUrl(pdfPath);
+        const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
+          const page = await pdf.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 1 });
+          const scale = modalWidth / viewport.width;
+          const scaledViewport = page.getViewport({ scale });
+
+          const canvas = document.createElement('canvas');
+          canvas.width = scaledViewport.width;
+          canvas.height = scaledViewport.height;
+          canvas.className = 'shadow-sm rounded';
+
+          const context = canvas.getContext('2d');
+          if (!context) continue;
+
+          container.appendChild(canvas);
+          await page.render({ canvasContext: context, viewport: scaledViewport }).promise;
+        }
+      } catch (err) {
+        setPdfError((err as Error).message || 'Unable to render PDF');
+      } finally {
+        setPdfLoading(false);
+      }
+    };
+
+    loadPdf();
+  }, [activeIndex, dataArray, modalWidth, showModal]);
+
   if (loading) return <div className="p-10">Loading...</div>;
   if (error) return <div className="p-10 text-red-500">{error}</div>;
   if (!dataArray.length) return <div className="p-10">No manifesto found</div>;
@@ -90,7 +142,9 @@ export default function ManifestoPage() {
       {/* Card Grid */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {dataArray.map((manifesto, index) => {
-          const fileUrl = manifesto.pdf_file || '/assets/logo_janadesh.png';
+          const fileUrl = manifesto.pdf_file
+            ? buildMediaUrl(manifesto.pdf_file)
+            : '/assets/logo_janadesh.png';
 
           return (
             <div key={index} className="rounded-3xl bg-white border hover:border-blue-200">
@@ -168,14 +222,36 @@ export default function ManifestoPage() {
 
             <div className="flex-1 overflow-auto flex flex-col items-center">
               {dataArray[activeIndex].pdf_file?.toLowerCase().endsWith('.pdf') ? (
-                <iframe
-                  src={`${dataArray[activeIndex].pdf_file}#toolbar=0&navpanes=0&scrollbar=0`}
-                  className="w-full h-full border-none"
-                  title={`${dataArray[activeIndex].title} PDF`}
-                />
+                <div className="w-full h-full overflow-auto">
+                  {pdfLoading && (
+                    <div className="text-sm text-gray-600 text-center p-6">Loading PDF...</div>
+                  )}
+                  {pdfError && (
+                    <div className="text-sm text-gray-600 text-center p-6">
+                      <p className="mb-4">Unable to render PDF. Open it in a new tab.</p>
+                      <a
+                        href={buildMediaUrl(dataArray[activeIndex].pdf_file)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex text-sm items-center justify-center px-4 py-3 hover:bg-gray-200 border border-gray-300 rounded-full bg-white text-gray-800 transition"
+                      >
+                        Open PDF
+                      </a>
+                    </div>
+                  )}
+                  <div
+                    ref={pdfContainerRef}
+                    className="flex flex-col items-center gap-4"
+                    aria-label={`${dataArray[activeIndex].title} PDF`}
+                  />
+                </div>
               ) : (
                 <img
-                  src={dataArray[activeIndex].pdf_file || '/placeholder.png'}
+                  src={
+                    dataArray[activeIndex].pdf_file
+                      ? buildMediaUrl(dataArray[activeIndex].pdf_file)
+                      : '/placeholder.png'
+                  }
                   className="object-contain w-full h-full"
                   alt={dataArray[activeIndex].title}
                 />

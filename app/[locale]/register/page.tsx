@@ -56,7 +56,37 @@ const MembershipFormBasic = () => {
     }
   };
 
+  const getRequiredFieldsForStep = (step: number) => {
+    if (step === 1) {
+      return ['fullName', 'fatherName', 'motherName', 'dob', 'gender', 'phone'];
+    }
+    if (step === 2) {
+      return ['province', 'district', 'municipality', 'ward', 'tole'];
+    }
+    if (step === 3) {
+      return ['citizenshipNo', 'photo', 'citizenship'];
+    }
+    return [];
+  };
+
+  const isStepValid = (step: number) => {
+    const requiredFields = getRequiredFieldsForStep(step);
+    return requiredFields.every((field) => {
+      const value = formData[field as keyof typeof formData];
+      if (value instanceof File) return true;
+      return value !== null && String(value).trim() !== '';
+    });
+  };
+
   const nextStep = () => {
+    if (!isStepValid(currentStep)) {
+      alert(
+        locale === 'np'
+          ? 'कृपया सबै आवश्यक विवरण भर्नुहोस्।'
+          : 'Please fill in all required fields.'
+      );
+      return;
+    }
     if (currentStep < steps.length) setCurrentStep(currentStep + 1);
   };
 
@@ -114,8 +144,8 @@ const MembershipFormBasic = () => {
 
         alert(
           locale === 'np'
-            ? 'सर्भर त्रुटि भयो। Console हेर्नुहोस्।'
-            : 'Server error. Check console.'
+            ? 'कृपया सबै आवश्यक विवरण भर्नुहोस्।'
+            : 'Please fill in all required fields.'
         );
         return;
       }
@@ -172,7 +202,7 @@ const MembershipFormBasic = () => {
             <p className="text-lg opacity-90">
               {locale === 'np'
                 ? 'कृपया सबै विवरण सही रूपमा भर्नुहोस्'
-                : 'Please fill in all details correctly'}
+                : 'Please fill all details correctly'}
             </p>
 
           </div>
@@ -198,7 +228,7 @@ const MembershipFormBasic = () => {
                   <div key={step.id} className="flex flex-col items-center relative z-10">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${isCompleted
-                          ? 'bg-green-500 text-white'
+                          ? 'bg-[#2772b0] text-white'
                           : isActive
                             ? 'bg-[#2772b0] text-white scale-110'
                             : 'bg-gray-200 text-gray-500'
@@ -219,7 +249,7 @@ const MembershipFormBasic = () => {
           </div>
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit}  className="space-y-5">
 
             <div className="p-8">
               {/* Step 1: Personal Information */}
@@ -334,7 +364,6 @@ const MembershipFormBasic = () => {
                         type="email"
                         name="email"
                         value={formData.email}
-                        required
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-gray-300 bg-gray-300 text-black rounded-lg  outline-none"
                         placeholder="example@email.com"
@@ -442,7 +471,7 @@ const MembershipFormBasic = () => {
                         {locale === 'np' ? a('fields.citizenshipNo') : a('fields.citizenshipNo')}<span className="text-red-500">*</span>
                       </label>
                       <input
-                        type="text"
+                        type="number"
                         name="citizenshipNo"
                         value={formData.citizenshipNo}
                         onChange={handleChange}
