@@ -97,8 +97,8 @@ export default function Navbar() {
                 className={`
                   flex gap-6 transition-all duration-300
                   ${locale === 'np'
-                    ? 'text-[18px]'
-                    : 'text-[15.5px] font-normal'
+                    ? 'text-[17px]'
+                    : 'text-[15.2px] font-normal'
                   }
                 `}
               >
